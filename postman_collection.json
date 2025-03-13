@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "b48387c4-3660-49d5-bae7-8192bbac0f9a",
+		"name": "Fotexnet Homework",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31123513",
+		"_collection_link": "https://fotexnet-developers.postman.co/workspace/Fotexnet-Services~1590b312-8b20-4750-a5e9-edf1fe0cad88/collection/31123513-b48387c4-3660-49d5-bae7-8192bbac0f9a?action=share&source=collection_link&creator=31123513"
+	},
+	"item": [
+		{
+			"name": "Artists",
+			"item": [
+				{
+					"name": "Get artists - GET",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "lang",
+								"value": "hu",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://exam.api.fotex.net/api/artists?include_image=true&search=Szabo&page=1&per_page=20",
+							"protocol": "https",
+							"host": [
+								"exam",
+								"api",
+								"fotex",
+								"net"
+							],
+							"path": [
+								"api",
+								"artists"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "is_composer",
+									"description": "is_composer | is_performer | is_primary",
+									"disabled": true
+								},
+								{
+									"key": "letter",
+									"value": "Á",
+									"description": "The letters of ABC",
+									"disabled": true
+								},
+								{
+									"key": "include_image",
+									"value": "true",
+									"description": "Send any value to attach the portrait"
+								},
+								{
+									"key": "search",
+									"value": "Szabo",
+									"description": "Send any keyword to search in the names"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
