@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/router";
 import ListScreenComponent from "./ListScreenComponent";
 
@@ -79,61 +79,6 @@ const ListScreenContainer = () => {
     const [selectedType, setSelectedType] = useState<string>("");
     const [selectedLetter, setSelectedLetter] = useState<string>("");
 
-    const fetchArtists = useCallback(async () => {
-        if (!router.isReady) return;
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            const params = new URLSearchParams();
-            params.append("include_image", "true");
-            params.append("page", currentPage.toString());
-            params.append("per_page", perPage.toString());
-
-            if (searchTerm) {
-                params.append("search", searchTerm);
-            }
-
-            if (selectedType) {
-                params.append("type", selectedType);
-            }
-
-            if (selectedLetter) {
-                params.append("letter", selectedLetter);
-            }
-
-            const url = `https://exam.api.fotex.net/api/artists?${params.toString()}`;
-            console.log("Fetching from URL:", url);
-
-            const response = await fetch(url, {
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!response.ok) {
-                if (response.status === 500) {
-                    setServerError(true);
-                } else {
-                    setError(`HTTP error! Status: ${response.status}`);
-                }
-                return;
-            }
-
-            const data: ArtistResponse = await response.json();
-            setArtists(data.data);
-            setTotalPages(data.pagination.total_pages);
-        } catch (err) {
-            console.error("API call error:", err);
-            setError("An error occurred while loading the data");
-            setArtists([]);
-        } finally {
-            setLoading(false);
-        }
-    }, [currentPage, searchTerm, selectedType, selectedLetter, router.isReady]);
-
     useEffect(() => {
         if (!router.isReady) return;
 
@@ -148,18 +93,62 @@ const ListScreenContainer = () => {
         setTempSearchTerm(searchValue);
         setSelectedType(typeValue);
         setSelectedLetter(letterValue);
+
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const params = new URLSearchParams();
+                params.append("include_image", "true");
+                params.append("page", pageValue.toString());
+                params.append("per_page", perPage.toString());
+
+                if (searchValue) params.append("search", searchValue);
+                if (typeValue) params.append("type", typeValue);
+                if (letterValue) params.append("letter", letterValue);
+
+                const url = `https://exam.api.fotex.net/api/artists?${params.toString()}`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (!response.ok) {
+                    if (response.status === 500) {
+                        setServerError(true);
+                    } else {
+                        setError(`HTTP error! Status: ${response.status}`);
+                    }
+                    return;
+                }
+
+                const data: ArtistResponse = await response.json();
+                setArtists(data.data);
+                setTotalPages(data.pagination.total_pages);
+            } catch (err) {
+                console.error("API call error:", err);
+                setError("An error occurred while loading the data");
+                setArtists([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, [router.isReady, router.query]);
 
-    useEffect(() => {
-        if (!router.isReady) return;
-
+    const updateUrl = (params: Record<string, string | number>) => {
         const query: Record<string, string | number> = {};
-
-        if (currentPage !== 1) query.page = currentPage;
-        if (searchTerm) query.search = searchTerm;
-        if (selectedType) query.type = selectedType;
-        if (selectedLetter) query.letter = selectedLetter;
-
+        
+        if (params.page && params.page !== 1) query.page = params.page;
+        if (params.search) query.search = params.search;
+        if (params.type) query.type = params.type;
+        if (params.letter) query.letter = params.letter;
+        
         router.push(
             {
                 pathname: router.pathname,
@@ -168,40 +157,59 @@ const ListScreenContainer = () => {
             undefined,
             { shallow: true },
         );
-    }, [currentPage, searchTerm, selectedType, selectedLetter, router.isReady, router]);
-
-    useEffect(() => {
-        if (router.isReady) {
-            fetchArtists();
-        }
-    }, [fetchArtists, router.isReady]);
+    };
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+        updateUrl({
+            page,
+            search: searchTerm,
+            type: selectedType,
+            letter: selectedLetter
+        });
     };
 
     const handleSearchSubmit = (e: FormEvent) => {
         e.preventDefault();
+        updateUrl({
+            page: 1,
+            search: tempSearchTerm,
+            type: selectedType,
+            letter: selectedLetter
+        });
         setSearchTerm(tempSearchTerm);
-        setCurrentPage(1);
     };
 
     const clearSearch = () => {
         setTempSearchTerm("");
+        updateUrl({
+            page: 1,
+            search: "",
+            type: "",
+            letter: ""
+        });
         setSearchTerm("");
         setSelectedType("");
         setSelectedLetter("");
-        setCurrentPage(1);
     };
 
     const handleTypeChange = (value: string) => {
+        updateUrl({
+            page: 1,
+            search: searchTerm,
+            type: value,
+            letter: selectedLetter
+        });
         setSelectedType(value);
-        setCurrentPage(1);
     };
 
     const handleLetterChange = (value: string) => {
+        updateUrl({
+            page: 1,
+            search: searchTerm,
+            type: selectedType,
+            letter: value
+        });
         setSelectedLetter(value);
-        setCurrentPage(1);
     };
 
     return (
