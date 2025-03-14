@@ -1,2 +1,2 @@
-import Admin from "./ListScreenContainer";
-export default Admin;
+import ListScreen from "./ListScreenContainer";
+export default ListScreen;

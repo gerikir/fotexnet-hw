@@ -1,5 +1,5 @@
-import ListScreenContainer from "../components/ListScreen/ListScreenContainer";
+import ListScreen from "../components/ListScreen";
 
 export default function Home() {
-    return <ListScreenContainer />;
+    return <ListScreen />;
 }
