@@ -135,7 +135,7 @@ const ListScreenComponent = ({
                     <div className="my-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {[...Array(8)].map((_, index) => (
                             <Card key={index} elevation={0} className="flex h-[300px] flex-col !rounded-lg !shadow-md">
-                                <Skeleton variant="rectangular" width="100%" height="300px" className="rounded-t-lg" />
+                                <Skeleton variant="rectangular" width="100%" height="140px" className="rounded-t-lg" />
                                 <CardContent className="!flex flex-1 !flex-col !justify-between !pb-4">
                                     <Skeleton width="60%" />
                                     <Skeleton width="40%" />
@@ -179,12 +179,7 @@ const ListScreenComponent = ({
                                                 />
                                             </div>
                                         ) : (
-                                            <Skeleton
-                                                variant="rectangular"
-                                                width="100%"
-                                                height="140px"
-                                                className="rounded-t-lg"
-                                            />
+                                            <div className="h-[140px] w-full bg-gray-200" />
                                         )}
 
                                         <CardContent className="!flex flex-1 !flex-col !justify-between !pb-4">
