@@ -153,7 +153,7 @@ const ListScreenContainer = () => {
     useEffect(() => {
         if (!router.isReady) return;
 
-        const query: any = {};
+        const query: Record<string, string | number> = {};
 
         if (currentPage !== 1) query.page = currentPage;
         if (searchTerm) query.search = searchTerm;
@@ -168,7 +168,7 @@ const ListScreenContainer = () => {
             undefined,
             { shallow: true },
         );
-    }, [currentPage, searchTerm, selectedType, selectedLetter, router.isReady]);
+    }, [currentPage, searchTerm, selectedType, selectedLetter, router.isReady, router]);
 
     useEffect(() => {
         if (router.isReady) {

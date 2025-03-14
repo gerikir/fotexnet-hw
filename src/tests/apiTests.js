@@ -23,8 +23,6 @@ pm.test("Response has the required fields - id, name, albumCount, and portrait",
 
 pm.test("Pagination data is present in the response", function () {
     const responseData = pm.response.json();
-    
-    pm.expect(responseData.pagination).to.exist;
     pm.expect(responseData.pagination).to.be.an('object');
 });
 
