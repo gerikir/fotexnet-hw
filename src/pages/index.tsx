@@ -1,5 +1,5 @@
-import ListScreen from "../components/ListScreen";
+import ArtistListScreen from "../components/ArtistListScreen";
 
 export default function Home() {
-    return <ListScreen />;
+    return <ArtistListScreen />;
 }

@@ -1,19 +1,21 @@
 import React, { ChangeEvent, FormEvent } from "react";
-import { TArtist } from "./ListScreenContainer";
+import Layout from "../Layout";
+import ArtistCard from "../ArtistCard";
+import ArtistCardSkeleton from "../ArtistCard/ArtistCardSkeletonComponent";
+import { TArtist } from "./ArtistListScreenContainer";
+import Image from "next/image";
 import {
-    Card,
-    CardContent,
-    Typography,
     Pagination,
     Select,
     MenuItem,
     TextField,
     FormControl,
-    Skeleton,
     Button,
+    Switch,
+    FormControlLabel,
+    Typography,
 } from "@mui/material";
-import Layout from "../Layout";
-import Image from "next/image";
+
 
 interface TProps {
     loading: boolean;
@@ -32,9 +34,11 @@ interface TProps {
     handleTypeChange: (value: string) => void;
     handleLetterChange: (value: string) => void;
     clearSearch: () => void;
+    showAlbumCover: boolean;
+    handleShowAlbumCoverSwitch: (include: boolean) => void;
 }
 
-const ListScreenComponent = ({
+const ArtistListScreenComponent = ({
     loading,
     error,
     serverError,
@@ -51,6 +55,8 @@ const ListScreenComponent = ({
     handleTypeChange,
     handleLetterChange,
     clearSearch,
+    showAlbumCover,
+    handleShowAlbumCoverSwitch,
 }: TProps) => {
     return (
         <Layout>
@@ -60,8 +66,8 @@ const ListScreenComponent = ({
                 </Typography>
 
                 <div className="mb-14 mt-8">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                        <div className="col-span-1">
+                    <div className="grid grid-cols-12 gap-4 lg:grid-cols-10">
+                        <div className="col-span-full md:col-span-6 lg:col-span-2">
                             <form onSubmit={(e) => handleSearchSubmit(e)}>
                                 <div className="relative">
                                     <TextField
@@ -83,7 +89,7 @@ const ListScreenComponent = ({
                                 </div>
                             </form>
                         </div>
-                        <div className="col-span-1">
+                        <div className="col-span-full md:col-span-6 lg:col-span-2">
                             <FormControl fullWidth variant="outlined" size="small">
                                 <Select
                                     value={selectedType}
@@ -102,7 +108,7 @@ const ListScreenComponent = ({
                                 </Select>
                             </FormControl>
                         </div>
-                        <div className="col-span-1">
+                        <div className="col-span-full md:col-span-6 lg:col-span-2">
                             <FormControl fullWidth variant="outlined" size="small">
                                 <Select
                                     value={selectedLetter}
@@ -123,8 +129,19 @@ const ListScreenComponent = ({
                                 </Select>
                             </FormControl>
                         </div>
-                        <div className="col-span-1 flex items-center">
-                            <Button onClick={clearSearch} className="">
+                        <div className="col-span-full flex items-center justify-between gap-6 md:col-span-6 lg:col-span-4">
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={showAlbumCover}
+                                        onChange={(e) => handleShowAlbumCoverSwitch(e.target.checked)}
+                                        color="primary"
+                                    />
+                                }
+                                label="Show album cover"
+                                className="!m-0 whitespace-nowrap"
+                            />
+                            <Button onClick={clearSearch} className="!whitespace-nowrap">
                                 Reset filters
                             </Button>
                         </div>
@@ -132,72 +149,34 @@ const ListScreenComponent = ({
                 </div>
 
                 {loading && (
-                    <div className="my-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    <div className="my-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8">
                         {[...Array(8)].map((_, index) => (
-                            <Card key={index} elevation={0} className="flex h-[300px] flex-col !rounded-lg !shadow-md">
-                                <Skeleton variant="rectangular" width="100%" height="140px" className="rounded-t-lg" />
-                                <CardContent className="!flex flex-1 !flex-col !justify-between !pb-4">
-                                    <Skeleton width="60%" />
-                                    <Skeleton width="40%" />
-                                </CardContent>
-                            </Card>
+                            <ArtistCardSkeleton key={index} />
                         ))}
                     </div>
                 )}
 
                 {error && (
-                    <div className="my-8">
-                        <p className="text-red-500">{error}</p>
+                    <div className="my-8 flex justify-center">
+                        <p className="w-auto rounded-md border border-red-500 bg-red-50 p-4 text-center text-red-500">
+                            {error}
+                        </p>
                     </div>
                 )}
 
                 {serverError && (
-                    <div className="my-8">
-                        <p className="text-red-500">Server error occurred. Please try to refresh the page.</p>
+                    <div className="my-8 flex justify-center">
+                        <p className="w-auto rounded-md border border-red-500 bg-red-50 p-4 text-center text-red-500">
+                            Server error occurred. Please try to refresh the page.
+                        </p>
                     </div>
                 )}
 
                 {!loading && !error && !serverError && (
                     <>
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8">
                             {artists.length > 0 ? (
-                                artists.map((artist) => (
-                                    <Card
-                                        key={artist.id}
-                                        elevation={0}
-                                        className="flex h-[300px] flex-col !rounded-lg !shadow-md"
-                                    >
-                                        {artist.portrait ? (
-                                            <div className="relative h-[140px] w-full">
-                                                <Image
-                                                    src={artist.portrait}
-                                                    alt={artist.name}
-                                                    fill
-                                                    priority
-                                                    sizes="500px"
-                                                    className="absolute inset-0 rounded-t-lg object-cover"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="h-[140px] w-full bg-gray-200" />
-                                        )}
-
-                                        <CardContent className="!flex flex-1 !flex-col !justify-between !pb-4">
-                                            <Typography
-                                                gutterBottom
-                                                variant="h6"
-                                                component="div"
-                                                className="line-clamp-3 overflow-hidden text-ellipsis !leading-6"
-                                                title={artist.name}
-                                            >
-                                                {artist.name}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                Albumok száma: {artist.albumCount}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                ))
+                                artists.map((artist) => <ArtistCard key={artist.id} artist={artist} />)
                             ) : (
                                 <div className="col-span-full text-center">
                                     <p>No results found for the search criteria.</p>
@@ -211,6 +190,7 @@ const ListScreenComponent = ({
                                 page={currentPage}
                                 onChange={(event: ChangeEvent<unknown>, page: number) => handlePageChange(page)}
                                 color="primary"
+                                size="large"
                                 className="mt-20 flex justify-center"
                             />
                         )}
@@ -221,4 +201,4 @@ const ListScreenComponent = ({
     );
 };
 
-export default ListScreenComponent;
+export default ArtistListScreenComponent;
